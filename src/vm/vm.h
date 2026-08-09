@@ -84,4 +84,4 @@ extern double vm_result[2];
 int32_t evaluate(const uint8_t *bytecode, int32_t length);
 
 
-#endif
+#endif /* VM_H */
