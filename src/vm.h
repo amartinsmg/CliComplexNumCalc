@@ -8,6 +8,7 @@
 
 #define HEADER_SIZE 8
 #define OPCODE_SLOT_SIZE 8
+#define REAL_PART_SIZE 8
 #define PUSH_OPERAND_SIZE 16  // re (8) + im (8)
 
 
@@ -22,6 +23,9 @@
 #define OP_PUSH 0x00
 #define OP_HALT 0x01
 
+#define OP_CONTROL_LO 0x00
+#define OP_CONTROL_HI 0x01F
+
 /* Binary Operators: 0x20-0x3F */
 
 #define OP_ADD 0x20
@@ -29,6 +33,9 @@
 #define OP_MUL 0x22
 #define OP_DIV 0x23
 #define OP_POW 0x24
+
+#define OP_BINARY_LO 0x20
+#define OP_BINARY_HI 0x3F
 
 /* Unary Operators: 0x40-0x5F */
 
@@ -50,12 +57,20 @@
 #define OP_ARG 0x4F
 #define OP_NEG 0x50
 
+#define OP_UNARY_LO 0x40
+#define OP_UNARY_HI 0x5F
+
 
 /* ----- Error Codes --------------------------------- */
 
 typedef enum {
     VM_OK = 0,
-    VM_ERR_DIVISION_BY_ZERO = 1
+    VM_ERR_DIVISION_BY_ZERO = 1,
+    VM_ERR_TRUNCATED = 2,
+    VM_ERR_STACK_UNDERFLOW = 3,
+    VM_ERR_STACK_OVERFLOW = 4,
+    VM_ERR_UNKNOWN_OPCODE = 5,
+    VM_INVALID_RESULT = 6,
 } vm_error_t;
 
 
