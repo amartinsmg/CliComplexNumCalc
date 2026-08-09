@@ -1,0 +1,12 @@
+CompileFlags:
+  Add: 
+    - -std=c17
+    - -Wall
+  Remove: 
+    - -Wunused-parameter
+  Compiler: gcc
+
+Diagnostics:
+  ClangTidy:
+    Add: [modernize*, readability*]
+    Remove: [modernize-use-trailing-return-type]
