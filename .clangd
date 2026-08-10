@@ -2,6 +2,7 @@ CompileFlags:
   Add: 
     - -std=c17
     - -Wall
+    - -Iinclude
   Remove: 
     - -Wunused-parameter
   Compiler: gcc
