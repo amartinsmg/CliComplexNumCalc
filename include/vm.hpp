@@ -1,7 +1,7 @@
 #ifndef VM_H
 #define VM_H
 
-#include <stdint.h>
+#include <cstdint>
 
 
 #define BYTECODE_VERSION 1
@@ -63,7 +63,7 @@
 
 /* ----- Error Codes --------------------------------- */
 
-typedef enum {
+using vm_error_t = enum {
     VM_OK = 0,
     VM_ERR_DIVISION_BY_ZERO = 1,
     VM_ERR_TRUNCATED = 2,
@@ -71,7 +71,7 @@ typedef enum {
     VM_ERR_STACK_OVERFLOW = 4,
     VM_ERR_UNKNOWN_OPCODE = 5,
     VM_INVALID_RESULT = 6,
-} vm_error_t;
+};
 
 
 /* ----- Output Buffer ------------------------------- */
