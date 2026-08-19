@@ -56,9 +56,9 @@ extern "C" int32_t evaluate(const uint8_t *bytecode, int32_t length) {
       if (stack.size() < 2) {
         return VM_ERR_STACK_UNDERFLOW;
       }
-      Complex opd1 = stack.top();
-      stack.pop();
       Complex opd2 = stack.top();
+      stack.pop();
+      Complex opd1 = stack.top();
       stack.pop();
       Complex result;
 
@@ -76,7 +76,7 @@ extern "C" int32_t evaluate(const uint8_t *bytecode, int32_t length) {
         if (opd2.real() == 0.0 && opd2.imag() == 0.0) {
           return VM_ERR_DIVISION_BY_ZERO;
         }
-        result = opd1 + opd2;
+        result = opd1 / opd2;
         break;
       case OP_POW:
         result = pow(opd1, opd2);
