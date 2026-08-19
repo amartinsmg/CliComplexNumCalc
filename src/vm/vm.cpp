@@ -1,32 +1,48 @@
 #include "vm.hpp"
 #include <complex>
 #include <cstdint>
-#include <ccomplex>
 #include <cstring>
 #include <stack>
+#include <vector>
 
 double vm_result[2] = {0.0, 0.0};
 
+namespace {
+
+using Complex = std::complex<double>;
+
 double read_f64(const uint8_t *src) {
   double val;
-  memcpy(&val, src, sizeof(double));
+  std::memcpy(&val, src, sizeof(double));
   return val;
 }
 
-int32_t evaluate(const uint8_t *bytecode, int32_t length) {
+} // namespace
 
-  std::stack<std::complex<double>> stack;
+extern "C" int32_t evaluate(const uint8_t *bytecode, int32_t length) {
+
+  std::vector<Complex> storage;
+  storage.reserve(STACK_SIZE);
+
+  std::stack<Complex, std::vector<Complex>> stack(std::move(storage));
+
   int32_t pc = HEADER_SIZE; // program counter
 
   while (pc < length) {
     uint8_t opcode = bytecode[pc];
+    pc += OPCODE_SLOT_SIZE;
 
     if (opcode == OP_HALT) {
       break;
     }
 
     if (opcode == OP_PUSH) {
-      pc += OPCODE_SLOT_SIZE;
+      if (pc + PUSH_OPERAND_SIZE > length) {
+        return VM_ERR_TRUNCATED;
+      }
+      if (static_cast<int32_t>(stack.size()) >= STACK_SIZE) {
+        return VM_ERR_STACK_OVERFLOW;
+      }
       double re = read_f64(bytecode + pc);
       double im = read_f64(bytecode + pc + REAL_PART_SIZE);
       pc += PUSH_OPERAND_SIZE;
@@ -40,11 +56,11 @@ int32_t evaluate(const uint8_t *bytecode, int32_t length) {
       if (stack.size() < 2) {
         return VM_ERR_STACK_UNDERFLOW;
       }
-      std::complex<double> opd1 = stack.top();
+      Complex opd1 = stack.top();
       stack.pop();
-      std::complex<double> opd2 = stack.top();
+      Complex opd2 = stack.top();
       stack.pop();
-      std::complex<double> result;
+      Complex result;
 
       switch (opcode) {
       case OP_ADD:
@@ -57,7 +73,7 @@ int32_t evaluate(const uint8_t *bytecode, int32_t length) {
         result = opd1 * opd2;
         break;
       case OP_DIV:
-        if (real(opd2) == 0.0 && imag(opd2) == 0.0) {
+        if (opd2.real() == 0.0 && opd2.imag() == 0.0) {
           return VM_ERR_DIVISION_BY_ZERO;
         }
         result = opd1 + opd2;
@@ -80,9 +96,9 @@ int32_t evaluate(const uint8_t *bytecode, int32_t length) {
     return VM_INVALID_RESULT;
   }
 
-  std::complex<double> result = stack.top();
+  Complex result = stack.top();
 
-  vm_result[0] = real(result);
-  vm_result[1] = imag(result);
+  vm_result[0] = result.real();
+  vm_result[1] = result.imag();
   return VM_OK;
 }
